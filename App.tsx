@@ -10,7 +10,7 @@ import WorkshopDetailsView from './views/WorkshopDetailsView';
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const tabs = [
     { name: 'Garage', icon: 'directions_car', path: '/' },
     { name: 'Explore', icon: 'explore', path: '/explore' },
@@ -26,9 +26,8 @@ const Navigation = () => {
           <button
             key={tab.name}
             onClick={() => navigate(tab.path)}
-            className={`flex flex-col items-center gap-1 transition-colors ${
-              isActive ? 'text-primary' : 'text-slate-400 dark:text-[#92a9c9]'
-            }`}
+            className={`flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-primary' : 'text-slate-400 dark:text-[#92a9c9]'
+              }`}
           >
             <span className={`material-symbols-outlined ${isActive ? 'fill-1' : ''}`}>
               {tab.icon}
@@ -43,19 +42,71 @@ const Navigation = () => {
   );
 };
 
+import LoginView from './views/LoginView';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+};
+
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="relative flex min-h-screen w-full max-w-md mx-auto flex-col bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+      {children}
+      {!isLoginPage && <Navigation />}
+    </div>
+  );
+};
+
+const AppRoutes = () => {
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/login" element={<LoginView />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            <GarageView />
+          </ProtectedRoute>
+        } />
+        <Route path="/explore" element={
+          <ProtectedRoute>
+            <ExploreView />
+          </ProtectedRoute>
+        } />
+        <Route path="/workshop/:id" element={
+          <ProtectedRoute>
+            <WorkshopDetailsView />
+          </ProtectedRoute>
+        } />
+        <Route path="/emergency" element={
+          <ProtectedRoute>
+            <EmergencyView />
+          </ProtectedRoute>
+        } />
+        <Route path="/history" element={
+          <ProtectedRoute>
+            <HistoryView />
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </Layout>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <HashRouter>
-      <div className="relative flex min-h-screen w-full max-w-md mx-auto flex-col bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
-        <Routes>
-          <Route path="/" element={<GarageView />} />
-          <Route path="/explore" element={<ExploreView />} />
-          <Route path="/workshop/:id" element={<WorkshopDetailsView />} />
-          <Route path="/emergency" element={<EmergencyView />} />
-          <Route path="/history" element={<HistoryView />} />
-        </Routes>
-        <Navigation />
-      </div>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </HashRouter>
   );
 };
