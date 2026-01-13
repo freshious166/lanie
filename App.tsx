@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
-import { HashRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import LoginView from './views/LoginView';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import GarageView from './views/GarageView';
 import ExploreView from './views/ExploreView';
 import EmergencyView from './views/EmergencyView';
@@ -42,9 +44,7 @@ const Navigation = () => {
   );
 };
 
-import LoginView from './views/LoginView';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
