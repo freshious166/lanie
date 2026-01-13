@@ -1,13 +1,27 @@
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { MOCK_VEHICLES, MOCK_HISTORY } from '../constants';
 
 const HistoryView: React.FC = () => {
   const activeVehicle = MOCK_VEHICLES[0];
+  const [activeFilter, setActiveFilter] = useState('All Events');
+
+  const filteredHistory = useMemo(() => {
+    if (activeFilter === 'All Events') return MOCK_HISTORY;
+    const typeMap: Record<string, string> = {
+      'Maintenance': 'maintenance',
+      'Accidents': 'accident',
+      'Ownership': 'ownership'
+    };
+    return MOCK_HISTORY.filter(event => event.type === typeMap[activeFilter]);
+  }, [activeFilter]);
+
+  const handleAddLog = () => {
+    alert('Log entry wizard initiated.\nYou can record new maintenance, refueling, or mileage logs here.');
+  };
 
   return (
     <div className="flex flex-col pb-24 min-h-screen bg-background-dark">
-      {/* Top Bar */}
       <div className="sticky top-0 z-50 bg-background-dark/80 backdrop-blur-md">
         <div className="flex items-center p-4 pb-2 justify-between">
           <div className="text-white flex size-12 items-center justify-start">
@@ -20,7 +34,6 @@ const HistoryView: React.FC = () => {
         </div>
       </div>
 
-      {/* Vehicle Info Card */}
       <div className="flex p-4">
         <div className="flex gap-4 items-center w-full">
           <img src={activeVehicle.imageUrl} className="h-24 w-24 object-cover rounded-xl shadow-lg border border-[#324867]" alt="car" />
@@ -39,7 +52,6 @@ const HistoryView: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Summary */}
       <div className="flex gap-3 px-4 py-2">
         <div className="flex-1 rounded-xl p-4 border border-[#324867] bg-[#162231]">
           <p className="text-[#92a9c9] text-xs font-bold uppercase tracking-wider mb-1">Mileage</p>
@@ -55,26 +67,26 @@ const HistoryView: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter Chips */}
       <div className="flex gap-3 px-4 py-4 overflow-x-auto no-scrollbar">
-        {['All Events', 'Maintenance', 'Accidents', 'Ownership'].map((filter, i) => (
-          <div key={filter} className={`flex h-9 shrink-0 items-center justify-center px-5 rounded-full border transition-colors ${i === 0 ? 'bg-primary border-primary text-white shadow-lg' : 'bg-[#233348] border-[#324867] text-[#92a9c9]'}`}>
+        {['All Events', 'Maintenance', 'Accidents', 'Ownership'].map((filter) => (
+          <button 
+            key={filter} 
+            onClick={() => setActiveFilter(filter)}
+            className={`flex h-9 shrink-0 items-center justify-center px-5 rounded-full border transition-all ${activeFilter === filter ? 'bg-primary border-primary text-white shadow-lg' : 'bg-[#233348] border-[#324867] text-[#92a9c9]'}`}
+          >
             <p className="text-sm font-semibold">{filter}</p>
-          </div>
+          </button>
         ))}
       </div>
 
-      {/* Timeline */}
       <div className="px-4 pb-20 relative">
         <h3 className="text-white text-lg font-bold pb-6">Service Timeline</h3>
         <div className="relative space-y-8">
-          {/* Timeline Vertical Line */}
           <div className="absolute left-[23px] top-0 bottom-0 w-[2px] bg-[#233348] z-0"></div>
 
-          {MOCK_HISTORY.map((event) => (
-            <div key={event.id} className="relative pl-12">
-              {/* Event Dot/Icon */}
-              <div className={`absolute left-0 flex items-center justify-center size-12 rounded-full border-4 border-background-dark z-10 ${
+          {filteredHistory.length > 0 ? filteredHistory.map((event) => (
+            <div key={event.id} className="relative pl-12 animate-in fade-in slide-in-from-left-4 duration-300">
+              <div className={`absolute left-0 flex items-center justify-center size-12 rounded-full border-4 border-background-dark z-10 transition-colors ${
                 event.type === 'accident' ? 'bg-[#162231] text-red-500' : 
                 event.type === 'maintenance' ? 'bg-[#162231] text-green-500' : 
                 'bg-[#162231] text-primary'
@@ -85,8 +97,7 @@ const HistoryView: React.FC = () => {
                    event.type === 'log' ? 'speed' : 'person'}
                 </span>
               </div>
-              {/* Card */}
-              <div className={`bg-[#162231] p-4 rounded-xl border-y border-r border-[#324867] ${
+              <div className={`bg-[#162231] p-4 rounded-xl border-y border-r border-[#324867] transition-all hover:bg-[#1c2a3d] ${
                 event.type === 'accident' ? 'border-l-4 border-l-red-500' : 
                 event.type === 'maintenance' ? 'border-l-4 border-l-green-500' : 
                 'border-l border-l-[#324867]'
@@ -113,13 +124,17 @@ const HistoryView: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="py-20 text-center text-[#92a9c9] w-full">
+              <span className="material-symbols-outlined text-4xl mb-2">history_toggle_off</span>
+              <p>No {activeFilter.toLowerCase()} found for this vehicle.</p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* FAB Add */}
       <div className="fixed bottom-24 right-6 z-50">
-        <button className="bg-primary hover:bg-primary/90 text-white flex items-center justify-center size-16 rounded-full shadow-2xl shadow-primary/40 active:scale-95 transition-transform">
+        <button onClick={handleAddLog} className="bg-primary hover:bg-primary/90 text-white flex items-center justify-center size-16 rounded-full shadow-2xl shadow-primary/40 active:scale-95 transition-transform">
           <span className="material-symbols-outlined" style={{ fontSize: '32px' }}>add</span>
         </button>
       </div>

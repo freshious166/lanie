@@ -1,11 +1,26 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_WORKSHOPS } from '../constants';
 
 const ExploreView: React.FC = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('Verified');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredWorkshops = useMemo(() => {
+    return MOCK_WORKSHOPS.filter(workshop => {
+      const matchesSearch = workshop.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           workshop.description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      let matchesFilter = true;
+      if (activeFilter === 'Verified') matchesFilter = workshop.isVerified;
+      if (activeFilter === 'Open Now') matchesFilter = workshop.hours.toLowerCase().includes('open');
+      if (activeFilter === 'Towing') matchesFilter = workshop.name.toLowerCase().includes('tow');
+      
+      return matchesSearch && matchesFilter;
+    });
+  }, [searchQuery, activeFilter]);
 
   return (
     <div className="relative flex flex-col h-screen overflow-hidden bg-background-dark">
@@ -40,7 +55,12 @@ const ExploreView: React.FC = () => {
           <div className="flex-1">
             <label className="flex items-center h-12 bg-background-dark/80 backdrop-blur-md rounded-xl border border-white/10 px-4 gap-2">
               <span className="material-symbols-outlined text-[#92a9c9]">search</span>
-              <input className="bg-transparent border-none focus:ring-0 text-white placeholder-[#92a9c9] w-full text-base font-normal" placeholder="Search mechanics..."/>
+              <input 
+                className="bg-transparent border-none focus:ring-0 text-white placeholder-[#92a9c9] w-full text-base font-normal" 
+                placeholder="Search mechanics..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </label>
           </div>
           <div className="bg-background-dark/80 backdrop-blur-md size-12 flex items-center justify-center rounded-xl border border-white/10">
@@ -67,12 +87,6 @@ const ExploreView: React.FC = () => {
         </div>
       </div>
 
-      {/* FABs */}
-      <div className="absolute right-4 bottom-[400px] z-10 flex flex-col gap-2">
-         <button className="flex size-12 items-center justify-center rounded-xl bg-background-dark/90 backdrop-blur-md border border-white/10 text-white shadow-xl"><span className="material-symbols-outlined">layers</span></button>
-         <button className="flex size-12 items-center justify-center rounded-xl bg-background-dark/90 backdrop-blur-md border border-white/10 text-white shadow-xl"><span className="material-symbols-outlined">my_location</span></button>
-      </div>
-
       {/* Bottom Sheet */}
       <div className="relative z-20 mt-auto flex flex-col bg-background-dark rounded-t-[32px] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
         <div className="flex w-full items-center justify-center py-4">
@@ -80,11 +94,11 @@ const ExploreView: React.FC = () => {
         </div>
         <div className="px-5 pb-2 flex items-center justify-between">
           <h2 className="text-white text-lg font-bold">Nearest Workshops</h2>
-          <span className="text-primary text-sm font-semibold">View all</span>
+          <span className="text-primary text-sm font-semibold">{filteredWorkshops.length} results</span>
         </div>
         
         <div className="flex flex-col gap-4 p-5 max-h-[350px] overflow-y-auto no-scrollbar">
-          {MOCK_WORKSHOPS.map(workshop => (
+          {filteredWorkshops.length > 0 ? filteredWorkshops.map(workshop => (
             <div 
               key={workshop.id} 
               onClick={() => navigate(`/workshop/${workshop.id}`)}
@@ -101,16 +115,23 @@ const ExploreView: React.FC = () => {
                 </div>
                 <p className="text-[#92a9c9] text-xs">{workshop.hours}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="flex items-center gap-1 text-primary">
-                    <span className="material-symbols-outlined text-sm">verified</span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Verified</span>
-                  </div>
+                  {workshop.isVerified && (
+                    <div className="flex items-center gap-1 text-primary">
+                      <span className="material-symbols-outlined text-sm">verified</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Verified</span>
+                    </div>
+                  )}
                   <span className="text-[#92a9c9] text-xs">•</span>
                   <span className="text-[#92a9c9] text-xs">{workshop.distance} away</span>
                 </div>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="py-10 text-center text-[#92a9c9]">
+              <span className="material-symbols-outlined text-4xl mb-2">search_off</span>
+              <p>No workshops found for "{searchQuery}"</p>
+            </div>
+          )}
           <div className="h-20 shrink-0" />
         </div>
       </div>

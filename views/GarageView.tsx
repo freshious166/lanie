@@ -50,7 +50,6 @@ const GarageView: React.FC = () => {
     if (cleanVin.length === 0) return 'Please enter a VIN.';
     if (cleanVin.length !== 17) return `VIN must be exactly 17 characters (current: ${cleanVin.length}).`;
     
-    // VINs never contain I, O, or Q to avoid confusion with 1, 0, or 9.
     if (/[IOQ]/.test(cleanVin)) {
       return 'VIN cannot contain letters I, O, or Q (often confused with numbers).';
     }
@@ -112,15 +111,12 @@ const GarageView: React.FC = () => {
     }
   };
 
-  const handleVinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase();
-    setVinInput(value);
-    if (error) setError(null); // Clear error while typing
+  const handleAction = (title: string) => {
+    alert(`Action initiated: ${title}\nThis feature is coming soon to your fleet management dashboard.`);
   };
 
   return (
     <div className="flex flex-col pb-24">
-      {/* Top Header */}
       <header className="flex items-center p-4 pb-2 justify-between sticky top-0 z-50 bg-background-dark/80 backdrop-blur-md">
         <div className="text-white flex size-12 items-center justify-start">
           <span className="material-symbols-outlined text-3xl">account_circle</span>
@@ -131,7 +127,6 @@ const GarageView: React.FC = () => {
         </div>
       </header>
 
-      {/* Search Bar */}
       <div className="px-4 mt-2">
         <div className="flex items-center h-12 bg-surface-dark/50 rounded-xl border border-white/10 px-4 gap-3">
           <span className="material-symbols-outlined text-[#92a9c9]">search</span>
@@ -150,7 +145,6 @@ const GarageView: React.FC = () => {
         </div>
       </div>
 
-      {/* Vehicle Carousel */}
       <section className="mt-4">
         {filteredVehicles.length > 0 ? (
           <div className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory px-4 gap-4">
@@ -163,8 +157,10 @@ const GarageView: React.FC = () => {
                 <div className={`relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border-2 transition-colors ${activeVehicleId === vehicle.id ? 'border-primary' : 'border-transparent'}`}>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <img src={vehicle.imageUrl} alt={vehicle.name} className="w-full h-full object-cover" />
-                  <div className="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs fill-1">verified</span> ACTIVE
+                  <div className={`absolute top-3 left-3 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 ${
+                    vehicle.status === 'Healthy' ? 'bg-primary' : vehicle.status === 'Warning' ? 'bg-red-500' : 'bg-amber-500'
+                  }`}>
+                    <span className="material-symbols-outlined text-xs fill-1">verified</span> {vehicle.status.toUpperCase()}
                   </div>
                 </div>
                 <div>
@@ -193,7 +189,6 @@ const GarageView: React.FC = () => {
         )}
       </section>
 
-      {/* Status Filters */}
       <div className="mt-6 px-4">
         <div className="flex gap-2 overflow-x-auto no-scrollbar py-2">
           {statusFilters.map((filter) => (
@@ -218,7 +213,6 @@ const GarageView: React.FC = () => {
         </div>
       </div>
 
-      {/* VIN Verification Section */}
       <div className="mt-6 px-4">
         <div className="bg-surface-dark rounded-2xl border border-white/5 p-4 flex flex-col gap-4">
           <div className="flex items-center justify-between">
@@ -235,7 +229,7 @@ const GarageView: React.FC = () => {
                 type="text"
                 maxLength={17}
                 value={vinInput}
-                onChange={handleVinChange}
+                onChange={(e) => setVinInput(e.target.value.toUpperCase())}
                 placeholder="Enter 17-digit VIN"
                 className={`w-full bg-[#101822] border rounded-xl py-3 px-4 text-white font-mono placeholder-[#324867] focus:ring-primary focus:border-primary uppercase transition-colors ${
                   error ? 'border-red-500/50 ring-1 ring-red-500/20' : 'border-white/10'
@@ -308,7 +302,6 @@ const GarageView: React.FC = () => {
         </div>
       </div>
 
-      {/* Vehicle Details Section */}
       <div className="mt-6 px-4">
         <div className="bg-surface-dark rounded-2xl border border-white/5 p-4 flex flex-col gap-4">
           <div className="flex items-center justify-between">
@@ -349,10 +342,8 @@ const GarageView: React.FC = () => {
         </div>
       </div>
 
-      {/* Vehicle Status */}
       <h3 className="text-white text-lg font-bold px-4 pb-2 pt-6">Vehicle Status</h3>
       <div className="space-y-4 px-4 pb-4">
-        {/* Maintenance Card */}
         <div className="flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-surface-dark p-4 border border-slate-100 dark:border-transparent">
           <div className="flex flex-[2_2_0px] flex-col gap-4">
             <div className="flex flex-col gap-1">
@@ -360,10 +351,13 @@ const GarageView: React.FC = () => {
                 <span className="material-symbols-outlined text-primary text-sm">build</span>
                 <p className="text-primary text-[11px] font-bold uppercase tracking-wider">Maintenance</p>
               </div>
-              <p className="text-white text-base font-bold leading-tight">Next Service in {Math.max(0, activeVehicle.nextServiceMileage - activeVehicle.mileage)} mi</p>
+              <p className="text-white text-base font-bold leading-tight">Next Service in {Math.max(0, activeVehicle.nextServiceMileage - activeVehicle.mileage).toLocaleString()} mi</p>
               <p className="text-[#92a9c9] text-sm font-normal">Oil change and brake inspection</p>
             </div>
-            <button className="flex min-w-[100px] items-center justify-center rounded-lg h-9 px-4 bg-primary/10 dark:bg-surface-accent text-primary dark:text-white gap-2 text-sm font-semibold">
+            <button 
+              onClick={() => handleAction('Service Scheduling')}
+              className="flex min-w-[100px] items-center justify-center rounded-lg h-9 px-4 bg-primary/10 dark:bg-surface-accent text-primary dark:text-white gap-2 text-sm font-semibold hover:bg-primary/20 transition-colors"
+            >
               <span className="material-symbols-outlined text-[18px]">calendar_today</span>
               <span>Schedule</span>
             </button>
@@ -373,7 +367,6 @@ const GarageView: React.FC = () => {
           </div>
         </div>
 
-        {/* Insurance Card */}
         <div className="flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-surface-dark p-4 border border-slate-100 dark:border-transparent">
           <div className="flex flex-[2_2_0px] flex-col gap-4">
             <div className="flex flex-col gap-1">
@@ -384,7 +377,10 @@ const GarageView: React.FC = () => {
               <p className="text-white text-base font-bold leading-tight">Insurance Expires in 30 days</p>
               <p className="text-[#92a9c9] text-sm font-normal">Policy #LN-99283</p>
             </div>
-            <button className="flex min-w-[100px] items-center justify-center rounded-lg h-9 px-4 bg-primary text-white gap-2 text-sm font-semibold">
+            <button 
+              onClick={() => handleAction('Insurance Renewal')}
+              className="flex min-w-[100px] items-center justify-center rounded-lg h-9 px-4 bg-primary text-white gap-2 text-sm font-semibold hover:bg-primary/90 transition-colors"
+            >
               <span className="material-symbols-outlined text-[18px]">sync</span>
               <span>Renew</span>
             </button>
@@ -395,7 +391,6 @@ const GarageView: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
       <h3 className="text-white text-lg font-bold px-4 pb-2 pt-6">Quick Actions</h3>
       <div className="flex flex-col gap-3 px-4">
         {[
@@ -403,9 +398,13 @@ const GarageView: React.FC = () => {
           { icon: 'description', title: 'Manage Documents', desc: 'Insurance, Registration, Logs' },
           { icon: 'settings_input_component', title: 'View Specs', desc: 'Technical data and VIN info' },
         ].map((action, idx) => (
-          <button key={idx} className="flex items-center justify-between p-4 bg-white dark:bg-surface-dark rounded-xl border border-slate-100 dark:border-transparent active:bg-surface-accent transition-colors">
+          <button 
+            key={idx} 
+            onClick={() => handleAction(action.title)}
+            className="flex items-center justify-between p-4 bg-white dark:bg-surface-dark rounded-xl border border-slate-100 dark:border-transparent active:bg-surface-accent transition-colors group"
+          >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <span className="material-symbols-outlined text-primary">{action.icon}</span>
               </div>
               <div className="text-left">
@@ -413,7 +412,7 @@ const GarageView: React.FC = () => {
                 <p className="text-xs text-[#92a9c9]">{action.desc}</p>
               </div>
             </div>
-            <span className="material-symbols-outlined text-slate-400">chevron_right</span>
+            <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
           </button>
         ))}
       </div>
