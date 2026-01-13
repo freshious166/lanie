@@ -45,7 +45,14 @@
 
         .no-scrollbar {
             -ms-overflow-style: none;
-            scrollbar-width: none;
+            /* IE and Edge */
+        }
+
+        @supports (scrollbar-width: none) {
+            .no-scrollbar {
+                scrollbar-width: none;
+                /* Firefox */
+            }
         }
 
         body {
