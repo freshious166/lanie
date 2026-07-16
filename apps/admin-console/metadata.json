@@ -1,0 +1,7 @@
+{
+  "name": "LaineFleet - Pro Vehicle Management",
+  "description": "A high-performance vehicle management portal featuring fleet tracking, service history, and AI-powered maintenance diagnostics.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

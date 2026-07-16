@@ -21,11 +21,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Frontend Dependencies
+        run: cd frontend && npm install
 
-      - name: Build Web App
-        run: npm run build
+      - name: Build Frontend Web App
+        run: cd frontend && npm run build
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -36,8 +36,11 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
+
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: cd frontend && npx cap sync android
 
       - name: Make gradlew executable
         run: |

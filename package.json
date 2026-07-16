@@ -1,26 +1,15 @@
 {
-  "name": "lainefleet-vehicle-management",
+  "name": "lanie-platform",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@capacitor/android": "^8.0.1",
-    "@capacitor/cli": "^8.0.1",
-    "@capacitor/core": "^8.0.1",
-    "@google/genai": "^0.2.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "react-router-dom": "^7.12.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "start:backend": "npm run start:dev --workspace=apps/backend-api",
+    "start:dashboard": "npm run dev --workspace=apps/web-dashboard",
+    "start:admin": "npm run dev --workspace=apps/admin-console",
+    "start:mobile": "npm run start --workspace=apps/mobile"
   }
 }

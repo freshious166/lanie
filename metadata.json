@@ -1,7 +1,0 @@
-{
-  "name": "LaineFleet - Vehicle Management & Emergency Services",
-  "description": "A comprehensive car management platform for tracking vehicle status, history, finding nearby workshops, and requesting emergency roadside assistance.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
-}
