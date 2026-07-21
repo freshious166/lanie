@@ -11,5 +11,8 @@
     "start:dashboard": "npm run dev --workspace=apps/web-dashboard",
     "start:admin": "npm run dev --workspace=apps/admin-console",
     "start:mobile": "npm run start --workspace=apps/mobile"
+  },
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node"
   }
 }
