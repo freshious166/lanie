@@ -1,0 +1,27 @@
+# render.yaml
+# Blueprint for deploying Lainefleet Backend and Database
+
+services:
+  - type: web
+    name: lainefleet-api
+    env: node
+    # From the monorepo root, install all dependencies then build only the backend
+    buildCommand: npm install && npm run build --workspace=apps/backend-api
+    # Start the backend in production mode
+    startCommand: npm run start:prod --workspace=apps/backend-api
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lainefleet-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+
+databases:
+  - name: lainefleet-db
+    databaseName: laniedb
+    user: lanieuser
+    # Render's free tier database size plan
+    plan: free
