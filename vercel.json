@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build --workspace=apps/web-dashboard",
+  "outputDirectory": "apps/web-dashboard/dist",
+  "installCommand": "npm install --no-package-lock"
+}
