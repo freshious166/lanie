@@ -18,4 +18,26 @@ export class SupplyChainService {
     async findAll() {
         return this.shipmentRepository.find({ order: { createdAt: 'DESC' } });
     }
+
+    async seedDemoData() {
+        if (await this.shipmentRepository.count() === 0) {
+            await this.shipmentRepository.save([
+                this.shipmentRepository.create({
+                    trackingNumber: 'TRK-9008234-A',
+                    origin: { contactInfo: 'Nestlé Distribution', address: 'Agbara Estate, Ogun' },
+                    destination: { address: 'Shoprite Ikeja City Mall' },
+                    status: 'IN_TRANSIT',
+                    temperatureLogs: [{ temp: -18.2, status: 'Optimal' }]
+                }),
+                this.shipmentRepository.create({
+                    trackingNumber: 'TRK-9008235-B',
+                    origin: { contactInfo: 'Pfizer Vaccines', address: 'Murtala Muhammed Airport' },
+                    destination: { address: 'Lagos University Teaching Hospital' },
+                    status: 'EXCEPTION',
+                    temperatureLogs: [{ temp: -5.4, status: 'Temperature Deviation Warning' }]
+                })
+            ]);
+        }
+        return { success: true, message: 'Shipment data seeded' };
+    }
 }

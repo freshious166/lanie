@@ -14,4 +14,9 @@ export class SupplyChainController {
     findAll() {
         return this.supplyChainService.findAll();
     }
+
+    @Post('seed')
+    async seedShipmentData() {
+        return this.supplyChainService.seedDemoData();
+    }
 }
