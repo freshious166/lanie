@@ -53,8 +53,17 @@ export class VendorsService {
     }): Promise<Vendor[]> {
         const qb = this.vendorsRepo
             .createQueryBuilder('vendor')
-            .leftJoinAndSelect('vendor.services', 'services')
-            .where('vendor.status = :status', { status: VendorStatus.VERIFIED });
+            .leftJoinAndSelect('vendor.services', 'services');
+
+        if (filters?.isVerified !== undefined) {
+            qb.andWhere('vendor.isVerified = :isVerified', { isVerified: filters.isVerified });
+            if (filters.isVerified === true) {
+                qb.andWhere('vendor.status = :status', { status: VendorStatus.VERIFIED });
+            }
+        } else {
+            // Default to only showing verified vendors if no filter is provided
+            qb.andWhere('vendor.status = :status', { status: VendorStatus.VERIFIED });
+        }
 
         if (filters?.state) {
             qb.andWhere('LOWER(vendor.state) = LOWER(:state)', { state: filters.state });
@@ -63,10 +72,7 @@ export class VendorsService {
             qb.andWhere('LOWER(vendor.city) = LOWER(:city)', { city: filters.city });
         }
         if (filters?.category) {
-            qb.andWhere('vendor.category = :category', { category: filters.category });
-        }
-        if (filters?.isVerified !== undefined) {
-            qb.andWhere('vendor.isVerified = :isVerified', { isVerified: filters.isVerified });
+            qb.andWhere('vendor.primaryCategory = :category', { category: filters.category });
         }
         if (filters?.search) {
             qb.andWhere(
