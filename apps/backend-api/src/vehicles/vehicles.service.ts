@@ -40,6 +40,23 @@ export class VehiclesService {
     vehicle.currentLng = lng;
     vehicle.currentSpeed = speed;
     vehicle.lastPingAt = new Date();
+
+    // Maintain history trail (max 50 points)
+    if (!vehicle.telemetryHistory) {
+      vehicle.telemetryHistory = [];
+    }
+    
+    vehicle.telemetryHistory.push({
+      lat: Number(lat),
+      lng: Number(lng),
+      speed: Number(speed),
+      timestamp: vehicle.lastPingAt
+    });
+
+    if (vehicle.telemetryHistory.length > 50) {
+      vehicle.telemetryHistory.shift(); // Remove oldest point
+    }
+
     return this.vehiclesRepository.save(vehicle);
   }
 

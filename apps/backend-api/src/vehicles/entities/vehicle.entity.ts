@@ -58,6 +58,9 @@ export class Vehicle {
     @Column({ type: 'timestamp', nullable: true })
     lastPingAt: Date;
 
+    @Column({ type: 'jsonb', nullable: true, default: [] })
+    telemetryHistory: any[];
+
     @ManyToOne(() => User, { nullable: true })
     owner: User;
 
