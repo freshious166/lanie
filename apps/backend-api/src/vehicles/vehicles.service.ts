@@ -31,7 +31,12 @@ export class VehiclesService {
   }
 
   async update(id: string, updateVehicleDto: UpdateVehicleDto) {
-    return this.vehiclesRepository.update(id, updateVehicleDto);
+    const payload: any = { ...updateVehicleDto };
+    if (payload.ownerId !== undefined) {
+      payload.owner = payload.ownerId ? { id: payload.ownerId } : null;
+      delete payload.ownerId;
+    }
+    return this.vehiclesRepository.update(id, payload);
   }
 
   async updateTelemetry(id: string, lat: number, lng: number, speed: number) {
