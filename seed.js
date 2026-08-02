@@ -7,7 +7,7 @@ async function seedDatabase() {
         console.log('Seeding Users...');
         await axios.post(`${API_URL}/auth/register`, {
             email: 'admin@laniefleet.com',
-            password: 'password123',
+            password: 'Password123',
             fullName: 'Admin User',
             role: 'SUPER_ADMIN'
         });
