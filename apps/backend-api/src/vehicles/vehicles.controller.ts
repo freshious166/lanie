@@ -22,6 +22,14 @@ export class VehiclesController {
     return this.vehiclesService.findOne(id);
   }
 
+  @Post(':id/telemetry')
+  updateTelemetry(
+    @Param('id') id: string, 
+    @Body() telemetryData: { lat: number, lng: number, speed: number }
+  ) {
+    return this.vehiclesService.updateTelemetry(id, telemetryData.lat, telemetryData.lng, telemetryData.speed);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
     return this.vehiclesService.update(id, updateVehicleDto);

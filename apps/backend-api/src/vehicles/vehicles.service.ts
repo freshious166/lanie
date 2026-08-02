@@ -34,6 +34,15 @@ export class VehiclesService {
     return this.vehiclesRepository.update(id, updateVehicleDto);
   }
 
+  async updateTelemetry(id: string, lat: number, lng: number, speed: number) {
+    const vehicle = await this.findOne(id);
+    vehicle.currentLat = lat;
+    vehicle.currentLng = lng;
+    vehicle.currentSpeed = speed;
+    vehicle.lastPingAt = new Date();
+    return this.vehiclesRepository.save(vehicle);
+  }
+
   async remove(id: string) {
     return this.vehiclesRepository.delete(id);
   }

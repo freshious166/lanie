@@ -46,6 +46,18 @@ export class Vehicle {
     @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
     maintenanceRiskScore: number; // 0-100 score, 100 being critical risk
 
+    @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+    currentLat: number;
+
+    @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+    currentLng: number;
+
+    @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+    currentSpeed: number;
+
+    @Column({ type: 'timestamp', nullable: true })
+    lastPingAt: Date;
+
     @ManyToOne(() => User, { nullable: true })
     owner: User;
 
