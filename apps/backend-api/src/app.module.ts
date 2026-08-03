@@ -14,6 +14,7 @@ import { MarketplaceModule } from './marketplace/marketplace.module';
 import { IntelligenceModule } from './intelligence/intelligence.module';
 import { HseModule } from './hse/hse.module';
 import { SupplyChainModule } from './supply-chain/supply-chain.module';
+import { JobDisputesModule } from './job-disputes/job-disputes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,6 +47,7 @@ import { SupplyChainModule } from './supply-chain/supply-chain.module';
     HseModule,
     SupplyChainModule,
     ServiceRecordsModule,
+    JobDisputesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,4 +14,14 @@ export class BillingController {
     subscribe(@Body() body: { userId: string, email: string, planId: string }) {
         return this.billingService.subscribeUser(body.userId, body.email, body.planId);
     }
+
+    @Get('dashboard')
+    getDashboard() {
+        return this.billingService.getDashboardMetrics();
+    }
+
+    @Post('seed')
+    seedData() {
+        return this.billingService.seedDemoData();
+    }
 }
